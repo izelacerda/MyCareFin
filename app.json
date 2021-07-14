@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "mycarefin",
+    "slug": "mycarefin",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "splash": {
+      "image": "./resources/splash.png",
+      "backgroundColor": "#1B1B1F"
+    }
+  },
+  "name": "mycarefin",
+  "displayName": "mycarefin"
+}
