@@ -1,10 +1,21 @@
 import React, { createContext, ReactNode, useContext, useState,useEffect } from "react";
 
-import * as Google from 'expo-google-app-auth';
+// import * as Google from 'expo-google-app-auth';
 import * as AppleAuthentication from 'expo-apple-authentication';
+
+import * as AuthSession from 'expo-auth-session';
+
+const { CLIENT_ID } = process.env;
+const { REDIRECT_URI } = process.env;
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+interface AuthorizationResponse {
+  params: {
+    access_token: string;
+  };
+  type: string;
+}
 interface AuthProviderProps {
   children: ReactNode;
 }
@@ -31,18 +42,30 @@ function AuthProvider({ children }: AuthProviderProps) {
 
   async function signInWithGoogle(){
     try {
-      const result = await Google.logInAsync({
-        iosClientId: '29237125704-aaquhcpie7arntt8kk3llllm52parc9s.apps.googleusercontent.com',
-        androidClientId: '29237125704-kdjslkomqnl75co33a7oedog7ujmo5p0.apps.googleusercontent.com',
-        scopes: ['profile','email']
-      });
+      // 
 
-      if(result.type === 'success') {
+      const RESPONSE_TYPE = 'token';
+      const SCOPE = encodeURI('profile email');
+      
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}&scope=${SCOPE}`;
+
+      const { params, type } = await AuthSession.startAsync({ authUrl }) as AuthorizationResponse;
+
+      // const result = await Google.logInAsync({
+      //   iosClientId: '661786778625-js9h4oout5bqejtcn6lgq6auigafld16.apps.googleusercontent.com',
+      //   androidClientId: '661786778625-o2asthonr5s3bq6jdbghd09bpai07o4j.apps.googleusercontent.com',
+      //   scopes: ['profile','email']
+      // });
+      console.log(params);
+      if(type === 'success') {
+        const response = await fetch(`https://googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${params.access_token}`);
+        const userInfo = await response.json();
+        console.log(userInfo);
         const userLogged = {
-          id: String(result.user.id),
-          email: result.user.email!,
-          name: result.user.name!,
-          photo: result.user.photoUrl!
+          id: String(userInfo.id),
+          email: userInfo.email,
+          name: userInfo.name,
+          photo: userInfo.picture
         };
         setUser(userLogged);
         await AsyncStorage.setItem(userStorageKey, JSON.stringify(userLogged));
