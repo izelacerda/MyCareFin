@@ -31,7 +31,9 @@ export default function App() {
   })
   const { userStorageLoading } = useAuth();
   useEffect(() => {
-    SplashScreen.hide();
+    if(SplashScreen) {
+      SplashScreen.hide();
+    }
   }, []);
   if(!fontsLoaded || userStorageLoading) {
     return <AppLoading />

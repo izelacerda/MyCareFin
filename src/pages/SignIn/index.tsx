@@ -1,5 +1,5 @@
-import React, { useState} from 'react';
-import { ActivityIndicator, Alert, Platform } from 'react-native';
+import React, { useState, useEffect} from 'react';
+import { ActivityIndicator, Alert, Platform, BackHandler } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useTheme } from 'styled-components';
 
@@ -9,6 +9,7 @@ import LogoSvg from '../../assets/logo.svg';
 
 import { useAuth } from '../../hooks/auth';
 import { SignInSocialButton } from '../../components/SignInSocialButton';
+import { LoadAnimation } from '../../components/LoadAnimation';
 
 import {
   Container,
@@ -44,15 +45,19 @@ export function SignIn() {
       setIsLoading(false);
     }
   }
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', () => { return true})
+  },[])
   return (
     <Container>
       <Header>
-        <TitleWrapper>
+        <LoadAnimation/>
+        {/* <TitleWrapper>
           <LogoSvg 
             width={RFValue(120)}
             height={RFValue(68)}
           />
-        </TitleWrapper>
+        </TitleWrapper> */}
         <Title>
           Controle suas {'\n'}
           finanças de forma {'\n'}
